@@ -20,8 +20,8 @@ class AuthController extends Controller
     public function register(Request $request){
         $validated = $request->validate([
             'name' => "required|string|max:255",
-            'email' => "required|string|unique:users",
-            "password" => "required|min:3|confirmed"
+            'email' => "required|string|email|unique:users,email",
+            "password" => "required|min:8|confirmed"
         ]);
 
         #store user data
@@ -29,6 +29,8 @@ class AuthController extends Controller
 
         # Login automatically
         Auth::login($user);
+
+        return redirect()->route('admin.dashboard');
         
     }
     public function login(Request $request){
@@ -40,7 +42,7 @@ class AuthController extends Controller
         if( Auth::attempt($validated) ) {
             $request->session()->regenerate();
 
-            return redirect()->route('home');
+            return redirect()->route('admin.dashboard');
         }
 
         throw ValidationException::withMessages([
